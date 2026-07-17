@@ -159,22 +159,12 @@ footer a{color:var(--teal-light);font-weight:600}
       <p><span class="en">Best for anything — we reply within one business day.</span><span class="ar">الأفضل لأي موضوع — نرد خلال يوم عمل واحد.</span></p>
       <span class="val">admin@martin.live</span>
     </a>
-    <div class="card" data-fx="up" data-delay=".08">
-      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11Z"/><circle cx="12" cy="10" r="2.6"/></svg></div>
-      <h3><span class="en">Location</span><span class="ar">الموقع</span></h3>
-      <p><span class="en">We build Martin from the heart of the region.</span><span class="ar">نبني مارتن من قلب المنطقة.</span></p>
-      <span class="val"><span class="en">Riyadh, Saudi Arabia</span><span class="ar">الرياض، المملكة العربية السعودية</span></span>
-    </div>
   </div>
 
   <div class="form-wrap" data-fx="up">
     <h2><span class="en">Send us a message</span><span class="ar">أرسل لنا رسالة</span></h2>
     <div class="sub"><span class="en">Fill this in and it opens your email app with everything ready to send.</span><span class="ar">املأ الحقول وسيفتح تطبيق البريد لديك والرسالة جاهزة للإرسال.</span></div>
     <form id="contact-form">
-      <div class="field">
-        <label for="f-name"><span class="en">Your name</span><span class="ar">اسمك</span></label>
-        <input id="f-name" name="name" type="text" required>
-      </div>
       <div class="field">
         <label for="f-email"><span class="en">Your email</span><span class="ar">بريدك الإلكتروني</span></label>
         <input id="f-email" name="email" type="email" required>
@@ -223,11 +213,10 @@ function setLang(l){
 document.getElementById('contact-form').addEventListener('submit',function(e){
   e.preventDefault();
   var ar=document.documentElement.lang==='ar';
-  var name=document.getElementById('f-name').value.trim();
   var email=document.getElementById('f-email').value.trim();
   var msg=document.getElementById('f-msg').value.trim();
-  var subject=(ar?'رسالة من ':'Message from ')+name;
-  var body=msg+'\n\n— '+name+' ('+email+')';
+  var subject=(ar?'رسالة من ':'Message from ')+email;
+  var body=msg+'\n\n— '+email;
   location.href='mailto:admin@martin.live?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
 });
 
