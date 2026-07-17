@@ -168,7 +168,11 @@ footer .made .hrt{color:var(--teal-light)}
     <div class="sub"><span class="en">Fill this in and it opens your email app with everything ready to send.</span><span class="ar">املأ الحقول وسيفتح تطبيق البريد لديك والرسالة جاهزة للإرسال.</span></div>
     <form id="contact-form">
       <div class="field">
-        <label for="f-email"><span class="en">Your email</span><span class="ar">بريدك الإلكتروني</span></label>
+        <label for="f-name"><span class="en">Name</span><span class="ar">الاسم</span></label>
+        <input id="f-name" name="name" type="text" required>
+      </div>
+      <div class="field">
+        <label for="f-email"><span class="en">Email</span><span class="ar">البريد الإلكتروني</span></label>
         <input id="f-email" name="email" type="email" required>
       </div>
       <div class="field">
@@ -219,10 +223,11 @@ function setLang(l){
 document.getElementById('contact-form').addEventListener('submit',function(e){
   e.preventDefault();
   var ar=document.documentElement.lang==='ar';
+  var name=document.getElementById('f-name').value.trim();
   var email=document.getElementById('f-email').value.trim();
   var msg=document.getElementById('f-msg').value.trim();
-  var subject=(ar?'رسالة من ':'Message from ')+email;
-  var body=msg+'\n\n— '+email;
+  var subject=(ar?'رسالة من ':'Message from ')+name;
+  var body=msg+'\n\n— '+name+' ('+email+')';
   location.href='mailto:admin@martin.live?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
 });
 
