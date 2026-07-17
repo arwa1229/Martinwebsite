@@ -78,21 +78,8 @@ html[lang="ar"] h1{letter-spacing:0;line-height:1.35}
   *{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
 }
 
-/* ============ contact cards ============ */
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin:42px 0 14px}
-.card{
-  background:#fff;border:1px solid var(--sunken);border-radius:18px;padding:24px 22px;
-  transition:transform .25s,box-shadow .25s;display:block;color:var(--ink);
-}
-.card:hover{transform:translateY(-5px);box-shadow:0 16px 34px rgba(17,17,17,.09)}
-.card .ic{width:44px;height:44px;border-radius:14px;background:var(--mint);color:var(--jade);display:flex;align-items:center;justify-content:center;margin-bottom:16px}
-.card .ic svg{width:22px;height:22px}
-.card h3{font-size:16px;margin-bottom:5px;color:var(--charcoal);font-weight:800}
-.card p{font-size:14px;color:var(--ink2)}
-.card .val{display:block;margin-top:7px;font-weight:700;color:var(--teal);font-size:14.5px;direction:ltr;unicode-bidi:embed}
-
 /* ============ form ============ */
-.form-wrap{background:var(--gray);border-radius:24px;padding:34px 28px;margin:26px 0 60px}
+.form-wrap{background:var(--gray);border-radius:24px;padding:34px 28px;margin:34px 0 60px}
 .form-wrap h2{font-size:22px;color:var(--charcoal);margin-bottom:6px}
 .form-wrap .sub{font-size:14px;color:var(--ink3);margin-bottom:22px}
 .field{margin-bottom:16px}
@@ -153,15 +140,6 @@ footer .made .hrt{color:var(--teal-light)}
 </header>
 
 <main class="wrap">
-
-  <div class="cards">
-    <a class="card" href="mailto:admin@martin.live" data-fx="up">
-      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2.5" y="5" width="19" height="14" rx="3"/><path d="M3 7l9 6 9-6"/></svg></div>
-      <h3><span class="en">Email</span><span class="ar">البريد الإلكتروني</span></h3>
-      <p><span class="en">Best for anything — we reply within one business day.</span><span class="ar">الأفضل لأي موضوع — نرد خلال يوم عمل واحد.</span></p>
-      <span class="val">admin@martin.live</span>
-    </a>
-  </div>
 
   <div class="form-wrap" data-fx="up">
     <h2><span class="en">Send us a message</span><span class="ar">أرسل لنا رسالة</span></h2>
