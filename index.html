@@ -77,14 +77,32 @@ h1,h2,h3{line-height:1.18;letter-spacing:-.02em;font-weight:800}
 html[lang="ar"] h1,html[lang="ar"] h2,html[lang="ar"] h3{letter-spacing:0;line-height:1.35}
 .lead{color:var(--ink2);font-size:19px;max-width:46ch}
 
-/* reveal on scroll */
-.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
-.reveal.in{opacity:1;transform:none}
-.reveal.d1{transition-delay:.12s}.reveal.d2{transition-delay:.24s}.reveal.d3{transition-delay:.36s}
+/* ===== scroll-driven reveal system =====
+   JS interpolates every [data-fx] element (and each [data-stagger] child)
+   between a hidden pose and rest as it travels through the viewport —
+   fully reversible and tied to scroll position, not a one-shot fade. */
+[data-fx],[data-stagger]>*{will-change:transform,opacity}
 @media (prefers-reduced-motion: reduce){
-  .reveal{opacity:1;transform:none;transition:none}
-  *{animation-duration:.01ms !important;animation-iteration-count:1 !important}
+  *{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
 }
+
+/* ===== hero entrance ===== */
+@keyframes rise{from{opacity:0;transform:translateY(30px)}}
+.hero-inner{display:flex;flex-direction:column;align-items:center;will-change:transform,opacity}
+.hero .wordmark,.hero .wordmark-ar,.hero .slogan,.hero p.pitch,.hero .wave,.hero .cta{animation:rise .85s cubic-bezier(.22,1,.36,1) backwards}
+.hero .wordmark{animation-delay:.55s}
+.hero .wordmark-ar{animation-delay:.7s}
+.hero .slogan{animation-delay:.85s}
+.hero p.pitch{animation-delay:1s}
+.hero .wave{animation-delay:1.15s}
+.hero .cta{animation-delay:1.3s}
+.hero .m-stroke{stroke-dasharray:240;stroke-dashoffset:240;animation:draw 1.1s .15s ease forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.hero .logo-mark circle{transform-box:fill-box;transform-origin:center;animation:popIn .5s 1.15s cubic-bezier(.34,1.56,.64,1) backwards}
+@keyframes popIn{from{transform:scale(0)}}
+.hero .v-slash{transform-box:fill-box;transform-origin:center;animation:slashIn .4s ease 1.5s backwards}
+.hero .v-slash + .v-slash{animation-delay:1.65s}
+@keyframes slashIn{from{opacity:0;transform:scale(.4)}}
 
 /* ============ hero ============ */
 .hero{
@@ -95,10 +113,10 @@ html[lang="ar"] h1,html[lang="ar"] h2,html[lang="ar"] h3{letter-spacing:0;line-h
     var(--surface);
 }
 .logo-mark{width:120px;margin-bottom:26px}
-.hero .wordmark{font-size:clamp(38px,6vw,58px);letter-spacing:.32em;font-weight:800;color:var(--charcoal);text-indent:.32em}
+.hero .wordmark{font-family:var(--font-ar);font-size:clamp(38px,6vw,58px);letter-spacing:.32em;font-weight:700;color:var(--charcoal);text-indent:.32em}
 .hero .wordmark-ar{font-family:var(--font-ar);font-size:clamp(26px,4vw,38px);font-weight:800;color:var(--charcoal);letter-spacing:.18em;margin-top:2px}
 .hero .slogan{margin-top:14px;display:flex;gap:22px;align-items:baseline;justify-content:center;flex-wrap:wrap}
-.hero .slogan .s-en{font-weight:700;letter-spacing:.42em;color:var(--teal);font-size:15px;text-indent:.42em}
+.hero .slogan .s-en{font-family:var(--font-ar);font-weight:700;letter-spacing:.42em;color:var(--teal);font-size:15px;text-indent:.42em}
 .hero .slogan .s-ar{font-family:var(--font-ar);font-weight:700;color:var(--teal);font-size:17px}
 .hero p.pitch{margin:30px auto 0;max-width:52ch;font-size:clamp(17px,2.2vw,21px);color:var(--ink2)}
 .hero .cta{
@@ -123,12 +141,18 @@ html[lang="ar"] .hero .scroll-hint{letter-spacing:.05em}
 
 /* ============ story layout ============ */
 .story{position:relative;padding:40px 0 20px}
-.story::before{ /* the storyline spine */
+.story::before{ /* spine track */
   content:"";position:absolute;top:0;bottom:0;inset-inline-start:50%;width:2px;
-  background:linear-gradient(var(--sunken),var(--teal-light),var(--sunken));
+  background:var(--sunken);
   transform:translateX(-50%);
 }
-@media(max-width:880px){.story::before{inset-inline-start:26px;transform:none}}
+.story::after{ /* spine fill — height driven by scroll (--spine set from JS) */
+  content:"";position:absolute;top:0;height:var(--spine,0px);inset-inline-start:50%;width:2px;
+  background:linear-gradient(180deg,var(--teal-light),var(--teal));
+  transform:translateX(-50%);border-radius:2px;
+  box-shadow:0 0 14px rgba(36,182,168,.55);
+}
+@media(max-width:880px){.story::before,.story::after{inset-inline-start:26px}}
 
 .chapter{
   position:relative;display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:center;
@@ -152,9 +176,11 @@ html[lang="ar"] .hero .scroll-hint{letter-spacing:.05em}
   width:58px;height:58px;border-radius:19px;background:#fff;border:2px solid var(--sunken);
   display:flex;align-items:center;justify-content:center;z-index:2;
   box-shadow:0 6px 18px rgba(17,17,17,.07);
+  transition:border-color .45s ease,box-shadow .45s ease;
 }
+.node.on{border-color:var(--teal);box-shadow:0 6px 22px rgba(0,143,131,.28)}
 @media(max-width:880px){.node{inset-inline-start:26px;transform:translateX(-50%);width:46px;height:46px;border-radius:15px;top:72px}}
-.node svg{width:66%;height:66%}
+.node svg{width:66%;height:66%;transform-box:fill-box;transform-origin:center}
 
 /* emotion faces (stroke style, on-brand rounded square face) */
 .face{stroke:var(--charcoal);stroke-width:5;fill:none;stroke-linecap:round;stroke-linejoin:round}
@@ -254,20 +280,21 @@ html[lang="ar"] .milestone b{letter-spacing:0}
 .trow.hot .tt{color:#fff}.trow.hot .ts{color:#9fb3ae}
 .trow.hot .ic{background:rgba(36,182,168,.16);color:var(--teal-light)}
 
-/* ch1 floating chips */
+/* ch1 floating chips — outer .task is scroll-flown by JS, inner .bob floats */
 .chaos{position:relative;height:380px}
-.chaos .c-face{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:130px}
+.c-face{position:absolute;left:50%;top:50%;width:130px;margin:-65px 0 0 -65px}
 .task{
   position:absolute;background:#fff;border:1px solid var(--sunken);border-radius:999px;
   font-size:13.5px;font-weight:600;color:var(--ink2);padding:9px 18px;white-space:nowrap;
-  box-shadow:0 8px 22px rgba(17,17,17,.09);animation:float 5s ease-in-out infinite;
+  box-shadow:0 8px 22px rgba(17,17,17,.09);
 }
-.task:nth-child(2){top:6%;left:8%;animation-delay:.3s}
-.task:nth-child(3){top:16%;right:4%;animation-delay:1.1s}
-.task:nth-child(4){bottom:22%;left:2%;animation-delay:1.9s}
-.task:nth-child(5){bottom:8%;right:10%;animation-delay:.7s}
-.task:nth-child(6){top:44%;right:-2%;animation-delay:2.4s}
-.task:nth-child(7){bottom:40%;left:12%;animation-delay:1.5s}
+.task .bob{display:inline-block;animation:float 5s ease-in-out infinite}
+.task:nth-child(1){top:6%;left:8%}.task:nth-child(1) .bob{animation-delay:.3s}
+.task:nth-child(2){top:16%;right:4%}.task:nth-child(2) .bob{animation-delay:1.1s}
+.task:nth-child(3){bottom:22%;left:2%}.task:nth-child(3) .bob{animation-delay:1.9s}
+.task:nth-child(4){bottom:8%;right:10%}.task:nth-child(4) .bob{animation-delay:.7s}
+.task:nth-child(5){top:44%;right:-2%}.task:nth-child(5) .bob{animation-delay:2.4s}
+.task:nth-child(6){bottom:40%;left:12%}.task:nth-child(6) .bob{animation-delay:1.5s}
 @keyframes float{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-13px) rotate(1.2deg)}}
 
 /* ============ features grid ============ */
@@ -301,7 +328,7 @@ html[lang="ar"] .closing h2{letter-spacing:0}
 .closing .logo-mark{width:86px;margin:0 auto 30px}
 .closing .logo-mark .m-stroke{stroke:#fff}
 .closing .slog{margin-top:36px;display:flex;gap:26px;justify-content:center;align-items:baseline;flex-wrap:wrap}
-.closing .slog b{letter-spacing:.4em;color:var(--teal-light);font-size:15px;font-weight:700;text-indent:.4em}
+.closing .slog b{font-family:var(--font-ar);letter-spacing:.4em;color:var(--teal-light);font-size:15px;font-weight:700;text-indent:.4em}
 .closing .slog span{font-family:var(--font-ar);color:var(--teal-light);font-weight:700;font-size:18px}
 
 footer{background:var(--charcoal);color:#8a9aa0;text-align:center;padding:30px 24px;font-size:13px}
@@ -320,12 +347,14 @@ footer b{color:#fff}
 
 <!-- ============ HERO ============ -->
 <header class="hero">
-  <!-- approved mark: open M · jade presence circle · voice slashes -->
+  <div class="hero-inner">
+  <!-- approved mark (Brand Identity Guidelines v2): open M · jade presence circle
+       in Martin Teal #008F83 · straight black voice-signal side slashes -->
   <svg class="logo-mark" viewBox="0 0 140 120" aria-label="Martin logo">
     <path class="m-stroke" d="M30 104 V38 L64 76 L98 38 V104" fill="none" stroke="#111111" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
     <circle cx="98" cy="16" r="10" fill="#008F83"/>
-    <path d="M80 6 a17 17 0 0 0 0 20" fill="none" stroke="#111111" stroke-width="5" stroke-linecap="round"/>
-    <path d="M116 6 a17 17 0 0 1 0 20" fill="none" stroke="#111111" stroke-width="5" stroke-linecap="round"/>
+    <path class="v-slash" d="M84 6 L76 24" fill="none" stroke="#111111" stroke-width="5" stroke-linecap="round"/>
+    <path class="v-slash" d="M112 6 L120 24" fill="none" stroke="#111111" stroke-width="5" stroke-linecap="round"/>
   </svg>
 
   <div class="wordmark">MARTIN</div>
@@ -345,6 +374,7 @@ footer b{color:#fff}
     <span class="ar">عيش يومًا واحدًا مع مارتن</span>
     <span aria-hidden="true">↓</span>
   </button>
+  </div>
 
   <div class="scroll-hint"><span class="en">scroll the story</span><span class="ar">مرّر لتتابع القصة</span></div>
 </header>
@@ -356,23 +386,23 @@ footer b{color:#fff}
   <section class="chapter" id="ch1">
     <div class="node" aria-hidden="true">
       <!-- overwhelmed face -->
-      <svg viewBox="0 0 64 64"><rect class="face" x="8" y="8" width="48" height="48" rx="15"/><path class="face" d="M20 26 l8 4 M44 26 l-8 4"/><path class="face" d="M23 44 q4.5 -4 9 0 q4.5 4 9 0"/></svg>
+      <svg viewBox="0 0 64 64" data-fx="pop"><rect class="face" x="8" y="8" width="48" height="48" rx="15"/><path class="face" d="M20 26 l8 4 M44 26 l-8 4"/><path class="face" d="M23 44 q4.5 -4 9 0 q4.5 4 9 0"/></svg>
     </div>
-    <div class="copy reveal">
+    <div class="copy" data-fx="left" data-stagger>
       <span class="kicker"><span class="en">Chapter 1 · 8:00 AM</span><span class="ar">الفصل ١ · ٨:٠٠ صباحًا</span></span>
       <h2><span class="en">The day starts full.</span><span class="ar">يبدأ اليوم مزدحمًا.</span></h2>
       <p class="en">A dinner that needs booking. Mom's clinic that needs a call. A plan with friends stuck in the group chat. Small things — but they sit on your mind all day long.</p>
       <p class="ar">عشاء يحتاج حجزًا، وعيادة والدتك تحتاج اتصالًا، وخطة مع الأصدقاء عالقة في محادثة المجموعة. تفاصيل صغيرة، لكنها تشغل بالك طوال اليوم.</p>
     </div>
-    <div class="art reveal d1">
+    <div class="art">
       <div class="chaos">
-        <span class="task"><span class="en">Book dinner for two 🍽️</span><span class="ar">احجز عشاء لشخصين 🍽️</span></span>
-        <span class="task"><span class="en">Call mom's clinic ☎️</span><span class="ar">اتصل بعيادة أمي ☎️</span></span>
-        <span class="task"><span class="en">Reply to Layla 💬</span><span class="ar">ردّ على ليلى 💬</span></span>
-        <span class="task"><span class="en">Reschedule car service 🔧</span><span class="ar">غيّر موعد الصيانة 🔧</span></span>
-        <span class="task"><span class="en">Friday coffee… when? ⏰</span><span class="ar">قهوة الجمعة… متى؟ ⏰</span></span>
-        <span class="task"><span class="en">Find a quiet place 📍</span><span class="ar">دوّر مكان هادئ 📍</span></span>
-        <svg class="c-face" viewBox="0 0 64 64" aria-hidden="true"><rect class="face" x="8" y="8" width="48" height="48" rx="15"/><path class="face" d="M20 26 l8 4 M44 26 l-8 4"/><path class="face" d="M23 44 q4.5 -4 9 0 q4.5 4 9 0"/></svg>
+        <span class="task" data-fx="fly" data-v="-90,-60"><span class="bob"><span class="en">Book dinner for two 🍽️</span><span class="ar">احجز عشاء لشخصين 🍽️</span></span></span>
+        <span class="task" data-fx="fly" data-v="90,-55" data-delay=".06"><span class="bob"><span class="en">Call mom's clinic ☎️</span><span class="ar">اتصل بعيادة أمي ☎️</span></span></span>
+        <span class="task" data-fx="fly" data-v="-95,55" data-delay=".12"><span class="bob"><span class="en">Reply to Layla 💬</span><span class="ar">ردّ على ليلى 💬</span></span></span>
+        <span class="task" data-fx="fly" data-v="85,70" data-delay=".18"><span class="bob"><span class="en">Reschedule car service 🔧</span><span class="ar">غيّر موعد الصيانة 🔧</span></span></span>
+        <span class="task" data-fx="fly" data-v="105,0" data-delay=".24"><span class="bob"><span class="en">Friday coffee… when? ⏰</span><span class="ar">قهوة الجمعة… متى؟ ⏰</span></span></span>
+        <span class="task" data-fx="fly" data-v="-105,8" data-delay=".3"><span class="bob"><span class="en">Find a quiet place 📍</span><span class="ar">دوّر مكان هادئ 📍</span></span></span>
+        <div class="c-face" data-fx="zoom" data-delay=".18" aria-hidden="true"><svg viewBox="0 0 64 64"><rect class="face" x="8" y="8" width="48" height="48" rx="15"/><path class="face" d="M20 26 l8 4 M44 26 l-8 4"/><path class="face" d="M23 44 q4.5 -4 9 0 q4.5 4 9 0"/></svg></div>
       </div>
     </div>
   </section>
@@ -381,18 +411,18 @@ footer b{color:#fff}
   <section class="chapter flip" id="ch2">
     <div class="node" aria-hidden="true">
       <!-- curious face -->
-      <svg viewBox="0 0 64 64"><rect class="face jade" x="8" y="8" width="48" height="48" rx="15"/><circle cx="24" cy="28" r="2.6" fill="#008F83" stroke="none"/><circle cx="40" cy="28" r="2.6" fill="#008F83" stroke="none"/><path class="face jade" d="M26 43 q6 4 12 0"/></svg>
+      <svg viewBox="0 0 64 64" data-fx="pop"><rect class="face jade" x="8" y="8" width="48" height="48" rx="15"/><circle cx="24" cy="28" r="2.6" fill="#008F83" stroke="none"/><circle cx="40" cy="28" r="2.6" fill="#008F83" stroke="none"/><path class="face jade" d="M26 43 q6 4 12 0"/></svg>
     </div>
-    <div class="copy reveal">
+    <div class="copy" data-fx="right" data-stagger>
       <span class="kicker"><span class="en">Chapter 2 · Just ask</span><span class="ar">الفصل ٢ · فقط اطلب</span></span>
       <h2><span class="en">Say it once. Any language.</span><span class="ar">قلها مرة واحدة، بأي لغة.</span></h2>
       <p class="en">Speak or type — Arabic or English, switch anytime. Martin understands the intent behind your words and comes back with real options: top-rated, nearby, and ready to book.</p>
       <p class="ar">تحدّث أو اكتب — بالعربية أو الإنجليزية، وبدّل متى شئت. مارتن يفهم قصدك من كلامك ويعود إليك بخيارات حقيقية: الأعلى تقييمًا، والأقرب إليك، وجاهزة للحجز.</p>
     </div>
-    <div class="art reveal d1">
+    <div class="art" data-fx="tilt-l">
       <div class="phone">
         <div class="notch"></div>
-        <div class="screen">
+        <div class="screen" data-stagger>
           <div class="p-head"><span class="en">Ask Martin</span><span class="ar">اسأل مارتن</span></div>
           <div class="bubble you">
             <span class="who"><span class="en">You</span><span class="ar">أنت</span></span>
@@ -426,18 +456,18 @@ footer b{color:#fff}
   <section class="chapter" id="ch3">
     <div class="node" aria-hidden="true">
       <!-- assured face -->
-      <svg viewBox="0 0 64 64"><rect class="face" x="8" y="8" width="48" height="48" rx="15"/><path class="face" d="M20 28 h7 M37 28 h7"/><path class="face" d="M25 43 h14"/></svg>
+      <svg viewBox="0 0 64 64" data-fx="pop"><rect class="face" x="8" y="8" width="48" height="48" rx="15"/><path class="face" d="M20 28 h7 M37 28 h7"/><path class="face" d="M25 43 h14"/></svg>
     </div>
-    <div class="copy reveal">
+    <div class="copy" data-fx="left" data-stagger>
       <span class="kicker"><span class="en">Chapter 3 · You decide</span><span class="ar">الفصل ٣ · القرار قرارك</span></span>
       <h2><span class="en">Nothing happens until you say so.</span><span class="ar">لا شيء يحدث قبل موافقتك.</span></h2>
       <p class="en">Before any real call, Martin shows you exactly what he'll do — the venue, the request, the time, even the call language. One clear review. Confirm, edit, or cancel.</p>
       <p class="ar">قبل أي اتصال حقيقي، يعرض عليك مارتن ما سيفعله بالضبط: المكان، والطلب، والوقت، وحتى لغة المكالمة. مراجعة واحدة واضحة — أكّد أو عدّل أو ألغِ.</p>
     </div>
-    <div class="art reveal d1">
+    <div class="art" data-fx="tilt-r">
       <div class="phone">
         <div class="notch"></div>
-        <div class="screen">
+        <div class="screen" data-stagger>
           <div class="p-head"><span class="en">Nothing happens until you confirm</span><span class="ar">لا شيء يحدث حتى تؤكد</span></div>
           <div class="p-title"><span class="en">Review call</span><span class="ar">مراجعة الاتصال</span></div>
           <div>
@@ -459,18 +489,18 @@ footer b{color:#fff}
   <section class="chapter flip" id="ch4">
     <div class="node" aria-hidden="true">
       <!-- calm face, closed eyes -->
-      <svg viewBox="0 0 64 64"><rect class="face jade" x="8" y="8" width="48" height="48" rx="15"/><path class="face jade" d="M20 29 q4 3 8 0 M36 29 q4 3 8 0"/><path class="face jade" d="M26 42 q6 5 12 0"/></svg>
+      <svg viewBox="0 0 64 64" data-fx="pop"><rect class="face jade" x="8" y="8" width="48" height="48" rx="15"/><path class="face jade" d="M20 29 q4 3 8 0 M36 29 q4 3 8 0"/><path class="face jade" d="M26 42 q6 5 12 0"/></svg>
     </div>
-    <div class="copy reveal">
+    <div class="copy" data-fx="right" data-stagger>
       <span class="kicker"><span class="en">Chapter 4 · Live</span><span class="ar">الفصل ٤ · مباشر</span></span>
       <h2><span class="en">Martin makes the call.</span><span class="ar">مارتن يتولّى الاتصال.</span></h2>
       <p class="en">A real phone call, handled for you. Watch it live — who he's talking to, what's happening right now, how long it's taken. Step in whenever you like, or leave him to it and go on with your day.</p>
       <p class="ar">مكالمة هاتفية حقيقية تُدار نيابةً عنك. تابعها مباشرة: مع من يتحدث، وماذا يحدث الآن، وكم مضى من الوقت. تدخّل متى شئت، أو دعه يكمل وامضِ في يومك.</p>
     </div>
-    <div class="art reveal d1">
+    <div class="art" data-fx="tilt-l">
       <div class="phone dark">
         <div class="notch"></div>
-        <div class="screen">
+        <div class="screen" data-stagger>
           <div class="live-dot"><span class="en">Connected · evidence live</span><span class="ar">متصل · الدليل مباشر</span></div>
           <div class="orb-wrap">
             <div class="orb"><div class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
@@ -494,18 +524,18 @@ footer b{color:#fff}
   <section class="chapter" id="ch5">
     <div class="node" aria-hidden="true">
       <!-- happy face -->
-      <svg viewBox="0 0 64 64"><rect class="face jade" x="8" y="8" width="48" height="48" rx="15"/><circle cx="24" cy="27" r="2.6" fill="#008F83" stroke="none"/><circle cx="40" cy="27" r="2.6" fill="#008F83" stroke="none"/><path class="face jade" d="M22 40 q10 9 20 0"/></svg>
+      <svg viewBox="0 0 64 64" data-fx="pop"><rect class="face jade" x="8" y="8" width="48" height="48" rx="15"/><circle cx="24" cy="27" r="2.6" fill="#008F83" stroke="none"/><circle cx="40" cy="27" r="2.6" fill="#008F83" stroke="none"/><path class="face jade" d="M22 40 q10 9 20 0"/></svg>
     </div>
-    <div class="copy reveal">
+    <div class="copy" data-fx="left" data-stagger>
       <span class="kicker"><span class="en">Chapter 5 · Proof</span><span class="ar">الفصل ٥ · الإثبات</span></span>
       <h2><span class="en">Proof, not promises.</span><span class="ar">إثبات، لا وعود.</span></h2>
       <p class="en">With Martin, "done" means verified. Every outcome comes back with its evidence — the confirmation, the reference number, the exact time — saved to your private record.</p>
       <p class="ar">مع مارتن، «تم» تعني «تم التحقق». كل نتيجة تعود إليك مع دليلها: التأكيد، والرقم المرجعي، والوقت بدقة — محفوظة في سجلك الخاص.</p>
     </div>
-    <div class="art reveal d1">
+    <div class="art" data-fx="tilt-r">
       <div class="phone">
         <div class="notch"></div>
-        <div class="screen">
+        <div class="screen" data-stagger>
           <div class="p-head"><span class="en">Evidence-backed outcome</span><span class="ar">نتيجة مدعومة بالدليل</span></div>
           <div class="p-title"><span class="en">Call result</span><span class="ar">نتيجة الاتصال</span></div>
           <span class="badge"><span class="en">Confirmed</span><span class="ar">مؤكّد</span></span>
@@ -531,18 +561,18 @@ footer b{color:#fff}
   <section class="chapter flip" id="ch6">
     <div class="node" aria-hidden="true">
       <!-- wink / friendly -->
-      <svg viewBox="0 0 64 64"><rect class="face" x="8" y="8" width="48" height="48" rx="15"/><circle cx="24" cy="27" r="2.6" fill="#111" stroke="none"/><path class="face" d="M36 27 h8"/><path class="face" d="M24 41 q8 7 16 0"/></svg>
+      <svg viewBox="0 0 64 64" data-fx="pop"><rect class="face" x="8" y="8" width="48" height="48" rx="15"/><circle cx="24" cy="27" r="2.6" fill="#111" stroke="none"/><path class="face" d="M36 27 h8"/><path class="face" d="M24 41 q8 7 16 0"/></svg>
     </div>
-    <div class="copy reveal">
+    <div class="copy" data-fx="right" data-stagger>
       <span class="kicker"><span class="en">Chapter 6 · Together</span><span class="ar">الفصل ٦ · معًا</span></span>
       <h2><span class="en">Plan together — privately.</span><span class="ar">خططوا معًا — بخصوصية.</span></h2>
       <p class="en">Thursday dinner with friends? Everyone's Martin quietly compares fit and finds the times that work — without exposing anyone's calendar. The group decides; Martin books.</p>
       <p class="ar">عشاء الخميس مع الأصدقاء؟ «مارتن» كل شخص يقارن الملاءمة بهدوء ويجد الأوقات المناسبة للجميع — دون كشف تقويم أي أحد. المجموعة تقرر، ومارتن يحجز.</p>
     </div>
-    <div class="art reveal d1">
+    <div class="art" data-fx="tilt-l">
       <div class="phone">
         <div class="notch"></div>
-        <div class="screen">
+        <div class="screen" data-stagger>
           <div class="p-head"><span class="en">Shared plan · 4 people</span><span class="ar">خطة مشتركة · ٤ أشخاص</span></div>
           <div class="p-title"><span class="en">Thursday dinner</span><span class="ar">عشاء الخميس</span></div>
           <div class="avatars" aria-hidden="true"><span class="av1">S</span><span class="av2">L</span><span class="av3">N</span><span class="av4">A</span></div>
@@ -571,18 +601,18 @@ footer b{color:#fff}
   <section class="chapter" id="ch7">
     <div class="node" aria-hidden="true">
       <!-- content face -->
-      <svg viewBox="0 0 64 64"><rect class="face jade" x="8" y="8" width="48" height="48" rx="15"/><path class="face jade" d="M20 28 q4 -3 8 0 M36 28 q4 -3 8 0"/><path class="face jade" d="M23 41 q9 8 18 0"/></svg>
+      <svg viewBox="0 0 64 64" data-fx="pop"><rect class="face jade" x="8" y="8" width="48" height="48" rx="15"/><path class="face jade" d="M20 28 q4 -3 8 0 M36 28 q4 -3 8 0"/><path class="face jade" d="M23 41 q9 8 18 0"/></svg>
     </div>
-    <div class="copy reveal">
+    <div class="copy" data-fx="left" data-stagger>
       <span class="kicker"><span class="en">Chapter 7 · Every day</span><span class="ar">الفصل ٧ · كل يوم</span></span>
       <h2><span class="en">Your day, in one calm place.</span><span class="ar">يومك كله في مكان واحد هادئ.</span></h2>
       <p class="en">Today opens with what actually matters: what's moving now, what needs your decision, and what's confirmed. Calendars, bookings and reminders from all your sources — one chronology, zero noise.</p>
       <p class="ar">تفتح شاشة «اليوم» على ما يهمك فعلًا: ما الذي يتحرك الآن، وما الذي يحتاج قرارك، وما تم تأكيده. التقويمات والحجوزات والتذكيرات من كل مصادرك — في تسلسل واحد، بلا ضجيج.</p>
     </div>
-    <div class="art reveal d1">
+    <div class="art" data-fx="tilt-r">
       <div class="phone">
         <div class="notch"></div>
-        <div class="screen">
+        <div class="screen" data-stagger>
           <div class="p-head"><span class="en">Wednesday · 15 July</span><span class="ar">الأربعاء · ١٥ يوليو</span></div>
           <div class="p-title"><span class="en">Good afternoon, Sara.</span><span class="ar">مساء الخير يا سارة.</span></div>
           <div class="trow hot">
@@ -611,45 +641,45 @@ footer b{color:#fff}
 <!-- ============ FEATURES ============ -->
 <section class="features">
   <div class="wrap">
-    <span class="kicker reveal"><span class="en">Everything Martin does</span><span class="ar">كل ما يفعله مارتن</span></span>
-    <h2 class="reveal"><span class="en">One assistant. A whole life, easier.</span><span class="ar">مساعد واحد… وحياة كاملة أسهل.</span></h2>
-    <div class="grid">
-      <div class="tile reveal">
+    <span class="kicker" data-fx="up"><span class="en">Everything Martin does</span><span class="ar">كل ما يفعله مارتن</span></span>
+    <h2 data-fx="up" data-delay=".08"><span class="en">One assistant. A whole life, easier.</span><span class="ar">مساعد واحد… وحياة كاملة أسهل.</span></h2>
+    <div class="grid" data-stagger="zoom">
+      <div class="tile">
         <div class="t-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2a4 4 0 0 1 4 4v5a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4Z"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/></svg></div>
         <h3><span class="en">Voice-first, bilingual</span><span class="ar">صوتي أولًا وثنائي اللغة</span></h3>
         <p><span class="en">Arabic and English are equals. Speak either — Martin replies, and calls, in your language.</span><span class="ar">العربية والإنجليزية سواء. تحدّث بأيّهما — مارتن يرد ويتصل بلغتك.</span></p>
       </div>
-      <div class="tile reveal d1">
+      <div class="tile">
         <div class="t-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3A19.5 19.5 0 0 1 5.2 13 19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.9.5 2.8.7a2 2 0 0 1 1.7 2Z"/></svg></div>
         <h3><span class="en">Real phone calls</span><span class="ar">مكالمات حقيقية</span></h3>
         <p><span class="en">Martin dials venues, clinics and providers, negotiates your request, and reports back.</span><span class="ar">مارتن يتصل بالمطاعم والعيادات ومقدّمي الخدمات، ويتفاوض على طلبك، ويعود إليك بالنتيجة.</span></p>
       </div>
-      <div class="tile reveal d2">
+      <div class="tile">
         <div class="t-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></div>
         <h3><span class="en">Smart discovery</span><span class="ar">اكتشاف ذكي</span></h3>
         <p><span class="en">Top-rated places near you — with hours, distance, busyness and booking links.</span><span class="ar">أفضل الأماكن تقييمًا وأقربها إليك — مع ساعات العمل والمسافة والازدحام وروابط الحجز.</span></p>
       </div>
-      <div class="tile reveal d3">
+      <div class="tile">
         <div class="t-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 12l2 2 4-5"/><path d="M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20Z"/></svg></div>
         <h3><span class="en">Review before action</span><span class="ar">مراجعة قبل التنفيذ</span></h3>
         <p><span class="en">Every consequential step — calling, booking, messaging — pauses for your explicit confirmation.</span><span class="ar">كل خطوة مؤثرة — اتصال أو حجز أو رسالة — تتوقف حتى تؤكدها بنفسك.</span></p>
       </div>
-      <div class="tile reveal">
+      <div class="tile">
         <div class="t-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9Z"/><path d="M14 3v6h6M9 14h6M9 17h4"/></svg></div>
         <h3><span class="en">Evidence record</span><span class="ar">سجل بالأدلة</span></h3>
         <p><span class="en">Every booking is saved with its reference and receipt — recall any past booking, any time.</span><span class="ar">كل حجز يُحفظ مع مرجعه وإيصاله — استرجع أي حجز سابق في أي وقت.</span></p>
       </div>
-      <div class="tile reveal d1">
+      <div class="tile">
         <div class="t-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17.5" cy="9.5" r="2.6"/><path d="M14.8 15.2a5.4 5.4 0 0 1 6.7 4.8"/></svg></div>
         <h3><span class="en">Circle plans</span><span class="ar">خطط الدائرة</span></h3>
         <p><span class="en">Private group coordination — never a social feed, never an exposed calendar.</span><span class="ar">تنسيق جماعي خاص — ليس شبكة اجتماعية، ولا تقويمًا مكشوفًا.</span></p>
       </div>
-      <div class="tile reveal d2">
+      <div class="tile">
         <div class="t-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3a7 7 0 0 1 7 7c0 2-1 3.5-2 4.8-.8 1-1.3 1.6-1.5 3.2h-7c-.2-1.6-.7-2.2-1.5-3.2C6 13.5 5 12 5 10a7 7 0 0 1 7-7Z"/><path d="M9.5 21h5"/></svg></div>
         <h3><span class="en">Memory you control</span><span class="ar">ذاكرة بيدك</span></h3>
         <p><span class="en">Martin remembers your preferences — quiet tables, no peanuts. Every fact is visible and removable.</span><span class="ar">مارتن يتذكر تفضيلاتك — الطاولات الهادئة، وحساسية الفول السوداني. كل معلومة مرئية وقابلة للحذف.</span></p>
       </div>
-      <div class="tile reveal d3">
+      <div class="tile">
         <div class="t-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6Z"/><path d="M9 12l2 2 4-4"/></svg></div>
         <h3><span class="en">Privacy by design</span><span class="ar">خصوصية بالتصميم</span></h3>
         <p><span class="en">No stored card data, owner-entered OTP, explicit consent — every permission on your terms.</span><span class="ar">لا تُحفظ بيانات البطاقات، ورمز التحقق تدخله بنفسك، وموافقة صريحة — كل صلاحية بشروطك.</span></p>
@@ -660,18 +690,19 @@ footer b{color:#fff}
 
 <!-- ============ CLOSING ============ -->
 <section class="closing">
-  <svg class="logo-mark reveal" viewBox="0 0 140 120" aria-hidden="true">
+  <!-- reversed mark per guidelines: symbol/slashes to white on dark, teal emphasis preserved -->
+  <svg class="logo-mark" viewBox="0 0 140 120" aria-hidden="true" data-fx="zoom">
     <path class="m-stroke" d="M30 104 V38 L64 76 L98 38 V104" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
     <circle cx="98" cy="16" r="10" fill="#24B6A8"/>
-    <path d="M80 6 a17 17 0 0 0 0 20" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
-    <path d="M116 6 a17 17 0 0 1 0 20" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+    <path class="v-slash" d="M84 6 L76 24" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+    <path class="v-slash" d="M112 6 L120 24" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
   </svg>
-  <h2 class="reveal"><span class="en">Feel lighter.</span><span class="ar">لتشعر بخفّة.</span></h2>
-  <p class="reveal d1">
+  <h2 data-fx="up" data-delay=".05"><span class="en">Feel lighter.</span><span class="ar">لتشعر بخفّة.</span></h2>
+  <p data-fx="up" data-delay=".12">
     <span class="en">Martin turns everyday intent into handled, verified outcomes — and gives your attention back to what matters.</span>
     <span class="ar">مارتن يحوّل نواياك اليومية إلى نتائج منجزة وموثّقة — ويعيد انتباهك إلى ما يستحق.</span>
   </p>
-  <div class="slog reveal d2"><b>EASIER LIFE</b><span>حـيـاة أسـهـل</span></div>
+  <div class="slog" data-fx="pop" data-delay=".18"><b>EASIER LIFE</b><span>حـيـاة أسـهـل</span></div>
 </section>
 
 <footer>
@@ -696,19 +727,101 @@ function setLang(l){
   setLang(saved);
 })();
 
-/* ===== reveal on scroll ===== */
-var io=new IntersectionObserver(function(entries){
-  entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
-},{threshold:0.16});
-document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});
+/* ===== scroll engine: progress bar · hero parallax · story spine · reveals =====
+   Every [data-fx] element (and each [data-stagger] child) is interpolated
+   between a hidden pose and rest based on where it sits in the viewport,
+   so the animation scrubs with the scroll in both directions. */
+(function(){
+  var bar=document.getElementById('progress');
+  var doc=document.documentElement;
+  function progressBar(){
+    bar.style.width=(doc.scrollTop/(doc.scrollHeight-doc.clientHeight)*100)+'%';
+  }
 
-/* ===== scroll progress ===== */
-var bar=document.getElementById('progress');
-addEventListener('scroll',function(){
-  var h=document.documentElement;
-  var p=h.scrollTop/(h.scrollHeight-h.clientHeight);
-  bar.style.width=(p*100)+'%';
-},{passive:true});
+  if(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches){
+    addEventListener('scroll',progressBar,{passive:true});
+    progressBar();
+    return; // no motion: everything stays visible in place
+  }
+
+  var fxEls=[].slice.call(document.querySelectorAll('[data-fx]'));
+  var stEls=[].slice.call(document.querySelectorAll('[data-stagger]'));
+  var story=document.querySelector('.story');
+  var nodes=[].slice.call(document.querySelectorAll('.node'));
+  var heroInner=document.querySelector('.hero-inner');
+
+  function easeOut(t){return 1-Math.pow(1-t,3)}
+  function easeBack(t){var c=1.70158;t-=1;return t*t*((c+1)*t+c)+1}
+  function clamp01(v){return v<0?0:v>1?1:v}
+
+  /* 0 → element entering at 88% of the viewport, 1 → fully revealed */
+  function prog(el,span){
+    var r=el.getBoundingClientRect();
+    return clamp01((innerHeight*0.88-r.top)/(innerHeight*(span||0.5)));
+  }
+
+  function pose(el,fx,p){
+    if(p>=1){ /* at rest: clear inline styles so CSS (hover etc.) takes over */
+      if(!el._fxDone){el.style.opacity='';el.style.transform='';el._fxDone=true;}
+      return;
+    }
+    el._fxDone=false;
+    var e=easeOut(p),o=e,t='';
+    switch(fx){
+      case 'up':    t='translateY('+44*(1-e)+'px)';break;
+      case 'left':  t='translateX('+(-72*(1-e))+'px)';break;
+      case 'right': t='translateX('+72*(1-e)+'px)';break;
+      case 'zoom':  t='scale('+(0.8+0.2*e)+')';break;
+      case 'pop':   t='scale('+Math.max(0,easeBack(p))+')';o=clamp01(p*2);break;
+      case 'tilt-l':t='perspective(1100px) translateX('+(-64*(1-e))+'px) rotateY('+16*(1-e)+'deg)';break;
+      case 'tilt-r':t='perspective(1100px) translateX('+64*(1-e)+'px) rotateY('+(-16*(1-e))+'deg)';break;
+      case 'fly':
+        var v=(el.getAttribute('data-v')||'0,70').split(',');
+        t='translate('+v[0]*(1-e)+'px,'+v[1]*(1-e)+'px) rotate('+9*(1-e)+'deg)';break;
+      default:      t='translateY('+40*(1-e)+'px)';
+    }
+    el.style.opacity=o;
+    el.style.transform=t;
+  }
+
+  var ticking=false;
+  function frame(){
+    ticking=false;
+    progressBar();
+
+    if(heroInner){
+      var y=scrollY;
+      heroInner.style.transform='translateY('+y*0.32+'px)';
+      heroInner.style.opacity=Math.max(0,1-y/(innerHeight*0.85));
+    }
+
+    fxEls.forEach(function(el){
+      var d=parseFloat(el.getAttribute('data-delay'))||0;
+      pose(el,el.getAttribute('data-fx'),clamp01((prog(el)-d)/(1-d)));
+    });
+
+    stEls.forEach(function(box){
+      var kids=box.children,n=kids.length,p=prog(box,0.7);
+      for(var i=0;i<n;i++){
+        pose(kids[i],box.getAttribute('data-stagger')||'up',clamp01(p*(1+(n-1)*0.35)-i*0.35));
+      }
+    });
+
+    if(story){
+      var r=story.getBoundingClientRect();
+      var fill=Math.max(0,Math.min(r.height,innerHeight*0.62-r.top));
+      story.style.setProperty('--spine',fill+'px');
+      nodes.forEach(function(nd){
+        var nr=nd.getBoundingClientRect();
+        nd.classList.toggle('on',nr.top+nr.height/2-r.top<fill);
+      });
+    }
+  }
+  function schedule(){if(!ticking){ticking=true;requestAnimationFrame(frame);}}
+  addEventListener('scroll',schedule,{passive:true});
+  addEventListener('resize',schedule,{passive:true});
+  frame();
+})();
 </script>
 </body>
 </html>
