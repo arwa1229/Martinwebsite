@@ -331,8 +331,17 @@ html[lang="ar"] .closing h2{letter-spacing:0}
 .closing .slog b{font-family:var(--font-ar);letter-spacing:.4em;color:var(--teal-light);font-size:15px;font-weight:700;text-indent:.4em}
 .closing .slog span{font-family:var(--font-ar);color:var(--teal-light);font-weight:700;font-size:18px}
 
+.closing .cta-contact{
+  margin-top:40px;display:inline-flex;align-items:center;gap:10px;
+  background:var(--teal);color:#fff;font-weight:700;font-size:16px;
+  border-radius:999px;padding:15px 32px;
+  box-shadow:0 10px 26px rgba(0,143,131,.35);transition:background .2s,transform .2s;
+}
+.closing .cta-contact:hover{background:var(--teal-light);transform:translateY(-2px)}
+
 footer{background:var(--charcoal);color:#8a9aa0;text-align:center;padding:30px 24px;font-size:13px}
 footer b{color:#fff}
+footer a{color:var(--teal-light);font-weight:600}
 </style>
 </head>
 <body>
@@ -707,11 +716,16 @@ footer b{color:#fff}
     <span class="ar">مارتن يحوّل نواياك اليومية إلى نتائج منجزة وموثّقة — ويعيد انتباهك إلى ما يستحق.</span>
   </p>
   <div class="slog" data-fx="pop" data-delay=".18"><b>EASIER LIFE</b><span>حـيـاة أسـهـل</span></div>
+  <a class="cta-contact" href="contact.html" data-fx="up" data-delay=".24">
+    <span class="en">Contact us</span>
+    <span class="ar">تواصل معنا</span>
+    <span aria-hidden="true">→</span>
+  </a>
 </section>
 
 <footer>
-  <span class="en"><b>MARTIN · مارتن</b> — Easier Life · حياة أسهل © 2026</span>
-  <span class="ar"><b>مارتن · MARTIN</b> — حياة أسهل · Easier Life © ٢٠٢٦</span>
+  <span class="en"><b>MARTIN · مارتن</b> — Easier Life · حياة أسهل © 2026 · <a href="contact.html">Contact us</a></span>
+  <span class="ar"><b>مارتن · MARTIN</b> — حياة أسهل · Easier Life © ٢٠٢٦ · <a href="contact.html">تواصل معنا</a></span>
 </footer>
 
 <script>
@@ -758,10 +772,15 @@ function setLang(l){
   function easeBack(t){var c=1.70158;t-=1;return t*t*((c+1)*t+c)+1}
   function clamp01(v){return v<0?0:v>1?1:v}
 
-  /* 0 → element entering at 88% of the viewport, 1 → fully revealed */
+  /* 0 → element entering at 88% of the viewport, 1 → fully revealed.
+     endBoost completes anything on screen once the page hits its bottom,
+     so elements near the footer can always finish their reveal. */
+  var endBoost=0;
   function prog(el,span){
     var r=el.getBoundingClientRect();
-    return clamp01((innerHeight*0.88-r.top)/(innerHeight*(span||0.5)));
+    var p=clamp01((innerHeight*0.88-r.top)/(innerHeight*(span||0.5)));
+    if(endBoost>0 && r.top<innerHeight) p=Math.max(p,endBoost);
+    return p;
   }
 
   function pose(el,fx,p){
@@ -792,6 +811,9 @@ function setLang(l){
   function frame(){
     ticking=false;
     progressBar();
+
+    var maxS=doc.scrollHeight-doc.clientHeight;
+    endBoost=maxS>0?clamp01((doc.scrollTop-(maxS-140))/140):1;
 
     if(heroInner){
       var y=scrollY;
