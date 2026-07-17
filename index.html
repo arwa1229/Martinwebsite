@@ -96,7 +96,7 @@ html[lang="ar"] h1,html[lang="ar"] h2,html[lang="ar"] h3{letter-spacing:0;line-h
 .hero p.pitch{animation-delay:1s}
 .hero .wave{animation-delay:1.15s}
 .hero .cta{animation-delay:1.3s}
-.hero .m-stroke{stroke-dasharray:240;stroke-dashoffset:240;animation:draw 1.1s .15s ease forwards}
+.hero .m-stroke{stroke-dasharray:280;stroke-dashoffset:280;animation:draw 1.1s .15s ease forwards}
 @keyframes draw{to{stroke-dashoffset:0}}
 .hero .logo-mark circle{transform-box:fill-box;transform-origin:center;animation:popIn .5s 1.15s cubic-bezier(.34,1.56,.64,1) backwards}
 @keyframes popIn{from{transform:scale(0)}}
@@ -348,13 +348,15 @@ footer b{color:#fff}
 <!-- ============ HERO ============ -->
 <header class="hero">
   <div class="hero-inner">
-  <!-- approved mark (Brand Identity Guidelines v2): open M · jade presence circle
-       in Martin Teal #008F83 · straight black voice-signal side slashes -->
+  <!-- approved mark (Brand Identity Guidelines v2): open rounded M with inward
+       hook · floating presence dot in Martin Teal #008F83 · voice-signal arcs -->
   <svg class="logo-mark" viewBox="0 0 140 120" aria-label="Martin logo">
-    <path class="m-stroke" d="M30 104 V38 L64 76 L98 38 V104" fill="none" stroke="#111111" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
-    <circle cx="98" cy="16" r="10" fill="#008F83"/>
-    <path class="v-slash" d="M84 6 L76 24" fill="none" stroke="#111111" stroke-width="5" stroke-linecap="round"/>
-    <path class="v-slash" d="M112 6 L120 24" fill="none" stroke="#111111" stroke-width="5" stroke-linecap="round"/>
+    <path class="m-stroke" d="M34 106 V38 Q34 23 43 30 L64 96 Q66 102 68 95 L84 40 Q88 26 98 26 Q108 26 108 38 L108 54 Q108 64 99 62" fill="none" stroke="#111111" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="104" cy="12" r="9" fill="#008F83"/>
+    <path class="v-slash" d="M91 4 a14 14 0 0 0 0 16" fill="none" stroke="#111111" stroke-width="4" stroke-linecap="round"/>
+    <path class="v-slash" d="M85 1 a19 19 0 0 0 0 22" fill="none" stroke="#111111" stroke-width="4" stroke-linecap="round"/>
+    <path class="v-slash" d="M117 4 a14 14 0 0 1 0 16" fill="none" stroke="#111111" stroke-width="4" stroke-linecap="round"/>
+    <path class="v-slash" d="M123 1 a19 19 0 0 1 0 22" fill="none" stroke="#111111" stroke-width="4" stroke-linecap="round"/>
   </svg>
 
   <div class="wordmark">MARTIN</div>
@@ -690,12 +692,14 @@ footer b{color:#fff}
 
 <!-- ============ CLOSING ============ -->
 <section class="closing">
-  <!-- reversed mark per guidelines: symbol/slashes to white on dark, teal emphasis preserved -->
+  <!-- reversed mark per guidelines: symbol/arcs to white on dark, teal emphasis preserved -->
   <svg class="logo-mark" viewBox="0 0 140 120" aria-hidden="true" data-fx="zoom">
-    <path class="m-stroke" d="M30 104 V38 L64 76 L98 38 V104" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
-    <circle cx="98" cy="16" r="10" fill="#24B6A8"/>
-    <path class="v-slash" d="M84 6 L76 24" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
-    <path class="v-slash" d="M112 6 L120 24" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+    <path class="m-stroke" d="M34 106 V38 Q34 23 43 30 L64 96 Q66 102 68 95 L84 40 Q88 26 98 26 Q108 26 108 38 L108 54 Q108 64 99 62" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="104" cy="12" r="9" fill="#24B6A8"/>
+    <path class="v-slash" d="M91 4 a14 14 0 0 0 0 16" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+    <path class="v-slash" d="M85 1 a19 19 0 0 0 0 22" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+    <path class="v-slash" d="M117 4 a14 14 0 0 1 0 16" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+    <path class="v-slash" d="M123 1 a19 19 0 0 1 0 22" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
   </svg>
   <h2 data-fx="up" data-delay=".05"><span class="en">Feel lighter.</span><span class="ar">لتشعر بخفّة.</span></h2>
   <p data-fx="up" data-delay=".12">
