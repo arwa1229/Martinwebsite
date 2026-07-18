@@ -100,6 +100,7 @@ html[lang="ar"] .field label{letter-spacing:0}
 }
 .send:hover{background:var(--jade);transform:translateY(-2px)}
 .form-note{font-size:12.5px;color:var(--ink3);margin-top:12px}
+.sent-note{background:var(--jade-soft);color:var(--jade);border-radius:14px;padding:12px 16px;font-size:14px;font-weight:700;margin-bottom:18px}
 
 footer{background:var(--charcoal);color:#8a9aa0;text-align:center;padding:34px 24px 30px;font-size:13px;margin-top:auto}
 footer b{color:#fff}
@@ -156,8 +157,16 @@ footer .by{display:block;margin-top:6px;font-size:12.5px}
 
   <div class="form-wrap" data-fx="up">
     <h2><span class="en">Send us a message</span><span class="ar">أرسل لنا رسالة</span></h2>
-    <div class="sub"><span class="en">Fill this in and it opens your email app with everything ready to send.</span><span class="ar">املأ الحقول وسيفتح تطبيق البريد لديك والرسالة جاهزة للإرسال.</span></div>
-    <form id="contact-form">
+    <div class="sub"><span class="en">Fill this in and hit send — it goes straight to our inbox.</span><span class="ar">املأ الحقول واضغط إرسال — تصل رسالتك مباشرة إلى بريدنا.</span></div>
+    <div id="sent-note" class="sent-note" hidden>
+      <span class="en">✓ Your message was sent. We'll get back to you soon.</span>
+      <span class="ar">✓ تم إرسال رسالتك. سنعود إليك قريبًا.</span>
+    </div>
+    <form id="contact-form" action="https://formsubmit.co/arwa@martin.live" method="POST">
+      <input type="hidden" name="_subject" value="New message from martin.live">
+      <input type="hidden" name="_template" value="table">
+      <input type="hidden" name="_captcha" value="false">
+      <input type="hidden" name="_next" value="https://martin.live/contact.html?sent=1">
       <div class="field">
         <label for="f-name"><span class="en">Name</span><span class="ar">الاسم</span></label>
         <input id="f-name" name="name" type="text" required>
@@ -167,17 +176,21 @@ footer .by{display:block;margin-top:6px;font-size:12.5px}
         <input id="f-email" name="email" type="email" required>
       </div>
       <div class="field">
+        <label for="f-phone"><span class="en">Phone number</span><span class="ar">رقم الهاتف</span></label>
+        <input id="f-phone" name="phone" type="tel" required>
+      </div>
+      <div class="field">
         <label for="f-msg"><span class="en">Message</span><span class="ar">الرسالة</span></label>
         <textarea id="f-msg" name="message" required></textarea>
       </div>
       <button class="send" type="submit">
-        <span class="en">Open in my email app</span>
-        <span class="ar">افتح في تطبيق البريد</span>
+        <span class="en">Send</span>
+        <span class="ar">إرسال</span>
         <span aria-hidden="true">→</span>
       </button>
       <div class="form-note">
-        <span class="en">Nothing is stored on this page — the message goes straight from your own email.</span>
-        <span class="ar">لا يُحفظ أي شيء في هذه الصفحة — تُرسل الرسالة مباشرة من بريدك الخاص.</span>
+        <span class="en">Your message goes directly to the Martin team.</span>
+        <span class="ar">تصل رسالتك مباشرة إلى فريق مارتن.</span>
       </div>
     </form>
   </div>
@@ -226,17 +239,11 @@ function setLang(l){
   setLang(saved);
 })();
 
-/* ===== mailto form ===== */
-document.getElementById('contact-form').addEventListener('submit',function(e){
-  e.preventDefault();
-  var ar=document.documentElement.lang==='ar';
-  var name=document.getElementById('f-name').value.trim();
-  var email=document.getElementById('f-email').value.trim();
-  var msg=document.getElementById('f-msg').value.trim();
-  var subject=(ar?'رسالة من ':'Message from ')+name;
-  var body=msg+'\n\n— '+name+' ('+email+')';
-  location.href='mailto:arwa@martin.live?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
-});
+/* ===== show success note after FormSubmit redirects back ===== */
+if(new URLSearchParams(location.search).has('sent')){
+  document.getElementById('sent-note').hidden=false;
+  document.getElementById('contact-form').reset();
+}
 
 /* ===== light scroll reveal (same feel as home) ===== */
 (function(){
